@@ -7,11 +7,31 @@ import datetime
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 from pandas.plotting import register_matplotlib_converters
+import sys
+
+root_DIR = ''
 
 
 def collect_savings():
     with open('wallet/savings.json') as f:
         return json.loads(f.read())
+
+
+def create_continuous_graph(snapshot_list):
+    print(snapshot_list)
+    dates = []
+    net_worths = []
+    for snapshot_data in snapshot_list:
+        print(datetime.datetime.fromtimestamp(int(snapshot_data[0])))
+    current_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[0][0]))
+    current_date = datetime.date(current_date_and_time.year, current_date_and_time.month, current_date_and_time.day)
+    last_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[-1][0]))
+    last_date = datetime.date(last_date_and_time.year, last_date_and_time.month, last_date_and_time.year)
+    while current_date <= last_date:
+        dates.append(current_date)
+        net_worths.append(get_snapshot_total_value(current_date))
+    print(current_date)
+    sys.exit()
 
 
 def display_snapshot_graph():
@@ -204,6 +224,16 @@ def get_latest_snapshot():
     return snapshots[latest_snapshot]
 
 
+def calculate_line_between_two_snapshots(snapshot_1, snapshot_2):
+    value_2 = Decimal(get_snapshot_total_value(snapshot_2))
+    value_1 = Decimal(get_snapshot_total_value(snapshot_1))
+    point_2 = (0, value_2)
+    point_1 = (1, value_1)
+    m = Decimal(str((point_2[1] - point_1[1]) / (point_2[0] - point_1[0])))
+    b = Decimal(str(point_2[1]))
+    return m, b
+
+
 def make_projection(snapshot_list, second_point_index, index_delta):
     snapshot_1 = snapshot_list[-1]
     snapshot_2 = snapshot_list[second_point_index]
@@ -231,6 +261,7 @@ def make_projection(snapshot_list, second_point_index, index_delta):
 def get_projections():
     snapshots = load_snapshots()
     snapshot_list = snapshot_to_list(snapshots)
+    create_continuous_graph(snapshot_list)
 
     # First comparison
     make_projection(snapshot_list, -2, 12)
@@ -239,7 +270,7 @@ def get_projections():
 
 
 def load_snapshots():
-    with open('snapshots.json', 'r') as f:
+    with open(root_DIR + 'snapshots.json', 'r') as f:
         return json.loads(f.read())
 
 
@@ -290,3 +321,9 @@ def get_total_savings_and_rent(savings_data):
     rent_and_bills = load_rent_and_bills()
     total_rend_and_bills = get_total_rent_and_bills(rent_and_bills)
     return str(total + total_rend_and_bills)
+
+
+if __name__ == '__main__':
+    import os.path
+    root_DIR = os.path.split(os.path.dirname(__file__))[0] + '/'
+    get_projections()
