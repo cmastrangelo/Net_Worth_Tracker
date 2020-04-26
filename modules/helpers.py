@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 from pandas.plotting import register_matplotlib_converters
 import sys
+from pandas import DataFrame
 
 root_DIR = ''
 
@@ -18,20 +19,57 @@ def collect_savings():
 
 
 def create_continuous_graph(snapshot_list):
-    print(snapshot_list)
     dates = []
     net_worths = []
-    for snapshot_data in snapshot_list:
-        print(datetime.datetime.fromtimestamp(int(snapshot_data[0])))
-    current_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[0][0]))
-    current_date = datetime.date(current_date_and_time.year, current_date_and_time.month, current_date_and_time.day)
+    current_snapshot_index = 0
     last_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[-1][0]))
-    last_date = datetime.date(last_date_and_time.year, last_date_and_time.month, last_date_and_time.year)
+    last_date = datetime.date(last_date_and_time.year, last_date_and_time.month, last_date_and_time.day)
+    current_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[current_snapshot_index][0]))
+    current_date = datetime.date(current_date_and_time.year, current_date_and_time.month, current_date_and_time.day)
+    next_date = current_date
+    index_away_from_current_date = 0
     while current_date <= last_date:
         dates.append(current_date)
-        net_worths.append(get_snapshot_total_value(current_date))
-    print(current_date)
-    sys.exit()
+        if current_date == next_date:
+            net_worths.append(get_snapshot_total_value(snapshot_list[current_snapshot_index][1]))
+            if current_date != last_date:
+                m, b, next_date = create_current_line(snapshot_list, current_snapshot_index)
+                current_snapshot_index += 1
+                index_away_from_current_date = 0
+        else:
+            net_worths.append(round(Decimal(m*index_away_from_current_date + b),2))
+        index_away_from_current_date += 1
+        current_date += datetime.timedelta(days=1)
+
+    df = DataFrame(data={'date': dates, 'net_worth': net_worths})
+    df = df.set_index('date')
+    return df
+
+
+def graph_this_puppy(dates, net_worths):
+    register_matplotlib_converters()
+    fig, ax = plt.subplots()
+    ax.plot(dates, net_worths)
+
+    fmt = '${x:,.0f}'
+    tick = mtick.StrMethodFormatter(fmt)
+    ax.yaxis.set_major_formatter(tick)
+    plt.gcf().autofmt_xdate()
+    plt.show()
+
+
+def create_current_line(snapshot_list, current_snapshot_index):
+    current_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[current_snapshot_index][0]))
+    current_date = datetime.date(current_date_and_time.year, current_date_and_time.month, current_date_and_time.day)
+    next_date_and_time = datetime.datetime.fromtimestamp(int(snapshot_list[current_snapshot_index+1][0]))
+    next_date = datetime.date(next_date_and_time.year, next_date_and_time.month, next_date_and_time.day)
+    days_in_between = (next_date - current_date).days
+    m, b = calculate_line_between_two_snapshots(
+        snapshot_list[current_snapshot_index][1],
+        snapshot_list[current_snapshot_index + 1][1],
+        days_in_between
+    )
+    return m, b, next_date
 
 
 def display_snapshot_graph():
@@ -46,7 +84,7 @@ def display_snapshot_graph():
 
     register_matplotlib_converters()
     fig, ax = plt.subplots()
-    ax.plot(list_of_datetimes, list_of_totals)
+    ax.plot(list_of_datetimes, list_of_totals, '--bo')
 
     fmt = '${x:,.0f}'
     tick = mtick.StrMethodFormatter(fmt)
@@ -224,11 +262,15 @@ def get_latest_snapshot():
     return snapshots[latest_snapshot]
 
 
-def calculate_line_between_two_snapshots(snapshot_1, snapshot_2):
-    value_2 = Decimal(get_snapshot_total_value(snapshot_2))
-    value_1 = Decimal(get_snapshot_total_value(snapshot_1))
-    point_2 = (0, value_2)
-    point_1 = (1, value_1)
+def calculate_line_between_two_snapshots(snapshot_1, snapshot_2, index_difference):
+    value_2 = Decimal(get_snapshot_total_value(snapshot_1))
+    value_1 = Decimal(get_snapshot_total_value(snapshot_2))
+    return calculate_line_between_two_values(value_1, value_2, index_difference)
+
+
+def calculate_line_between_two_values(value1, value2, points_in_between):
+    point_2 = (0, value2)
+    point_1 = (points_in_between, value1)
     m = Decimal(str((point_2[1] - point_1[1]) / (point_2[0] - point_1[0])))
     b = Decimal(str(point_2[1]))
     return m, b
@@ -258,15 +300,101 @@ def make_projection(snapshot_list, second_point_index, index_delta):
     print('At slope', m_per_datapoint, 'the projection for', prediction_datetime, 'is', projection)
 
 
+def make_continuous_projections(continuous_df):
+    # Projection for 30 days
+    rows = [['Using last', 'Using date', '30 days', '3 Months', '6 Months', 'One Year', 'Two Years', 'Five Years', 'Ten Years']]
+    predictions = make_continuous_projection(continuous_df, 30)
+    rows.append(['30 days', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions['six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions['ten_years']])
+    predictions = make_continuous_projection(continuous_df, 60)
+    rows.append([
+        '2 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions[
+            'six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions[
+            'ten_years']])
+    predictions = make_continuous_projection(continuous_df, 90)
+    rows.append([
+        '3 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions[
+            'six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions[
+            'ten_years']])
+    predictions = make_continuous_projection(continuous_df, 120)
+    rows.append(['4 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions['six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions['ten_years']])
+
+    predictions = make_continuous_projection(continuous_df, 182)
+    rows.append(['6 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'],
+                 predictions['six_months'], predictions['one_year'], predictions['two_years'],
+                 predictions['five_years'], predictions['ten_years']])
+    print(tabulate(rows, headers='firstrow'))
+
+
+def make_continuous_projection(continuous_df, days_timeframe):
+    most_recent_date = continuous_df.iloc[-1]
+    date_to_compare = continuous_df.loc[most_recent_date.name - datetime.timedelta(days=days_timeframe)]
+
+    m, b = calculate_line_between_two_values(value1= most_recent_date['net_worth'], value2=date_to_compare['net_worth'], points_in_between=days_timeframe)
+
+    predictions = {'date_using': date_to_compare}
+    # Predictions
+    # AVERAGE_DAYS_PER_MONTH = Decimal('30.4')
+    # 1 months prediction = 30.4 days
+    prediction_in_days = 30
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['one_month'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    # 3 months prediction = 91.2 days
+    prediction_in_days = 91
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['three_months'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    # 6 months prediction = 182.4 days
+    prediction_in_days = 182
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['six_months'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    # 1 year prediction = 365 days
+    prediction_in_days = 365
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['one_year'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    # 2 years prediction = 730 days
+    prediction_in_days = 730
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['two_years'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    # 5 years prediction = 1825
+    prediction_in_days = 1825
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['five_years'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    # 10 year prediciton = 3650
+    prediction_in_days = 3650
+    prediction_date, prediction_net_worth = create_projection(prediction_in_days, most_recent_date, m)
+    predictions['ten_years'] = prediction_net_worth
+    #print(prediction_date, prediction_net_worth)
+
+    return predictions
+
+
+def create_projection(prediction_in_days, most_recent_date_data, m):
+    prediction_date = most_recent_date_data.name + datetime.timedelta(days=prediction_in_days)
+    prediction_net_worth = most_recent_date_data['net_worth'] + (m * prediction_in_days)
+    return prediction_date, prediction_net_worth
+
+
 def get_projections():
     snapshots = load_snapshots()
     snapshot_list = snapshot_to_list(snapshots)
-    create_continuous_graph(snapshot_list)
+    continuous_df = create_continuous_graph(snapshot_list)
+    make_continuous_projections(continuous_df)
 
     # First comparison
-    make_projection(snapshot_list, -2, 12)
-    make_projection(snapshot_list, -4, 6)
-    make_projection(snapshot_list, -8, 1.5)
+    #make_projection(snapshot_list, -2, 12)
+    #make_projection(snapshot_list, -4, 6)
+    #make_projection(snapshot_list, -8, 1.5)
 
 
 def load_snapshots():
