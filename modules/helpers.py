@@ -448,8 +448,21 @@ def get_total_savings_and_rent(savings_data):
     total = get_savings_total(table)
     rent_and_bills = load_rent_and_bills()
     total_rend_and_bills = get_total_rent_and_bills(rent_and_bills)
-    return str(total + total_rend_and_bills)
+    savings_for_purchase = load_savings_for_purchase()
+    savings_for_purchase_total = get_total_savings_for_purchase(savings_for_purchase)
+    return str(total + total_rend_and_bills + savings_for_purchase_total)
 
+
+def load_savings_for_purchase():
+    with open('wallet/savings_for_purchase.json', 'r') as f:
+        return json.loads(f.read())
+
+
+def get_total_savings_for_purchase(savings_for_purchase):
+    total = Decimal('0')
+    for saving_type in savings_for_purchase:
+        total += Decimal(str(savings_for_purchase[saving_type]))
+    return total
 
 if __name__ == '__main__':
     import os.path
