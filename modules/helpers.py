@@ -302,24 +302,24 @@ def make_projection(snapshot_list, second_point_index, index_delta):
 
 def make_continuous_projections(continuous_df):
     # Projection for 30 days
-    rows = [['Using last', 'Using date', '30 days', '3 Months', '6 Months', 'One Year', 'Two Years', 'Five Years', 'Ten Years']]
+    rows = [['Using last', 'Using date', '14 Day Slope Avg', '30 days', '3 Months', '6 Months', 'One Year', 'Two Years', 'Five Years', 'Ten Years']]
     predictions = make_continuous_projection(continuous_df, 30)
-    rows.append(['30 days', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions['six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions['ten_years']])
+    rows.append(['30 days', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'], predictions['six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions['ten_years']])
     predictions = make_continuous_projection(continuous_df, 60)
     rows.append([
-        '2 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions[
+        '2 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'], predictions[
             'six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions[
             'ten_years']])
     predictions = make_continuous_projection(continuous_df, 90)
     rows.append([
-        '3 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions[
+        '3 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'], predictions[
             'six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions[
             'ten_years']])
     predictions = make_continuous_projection(continuous_df, 120)
-    rows.append(['4 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'], predictions['six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions['ten_years']])
+    rows.append(['4 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'], predictions['six_months'], predictions['one_year'], predictions['two_years'], predictions['five_years'], predictions['ten_years']])
 
     predictions = make_continuous_projection(continuous_df, 182)
-    rows.append(['6 Months', predictions['date_using'].name, predictions['one_month'], predictions['three_months'],
+    rows.append(['6 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'],
                  predictions['six_months'], predictions['one_year'], predictions['two_years'],
                  predictions['five_years'], predictions['ten_years']])
     print(tabulate(rows, headers='firstrow'))
@@ -331,7 +331,7 @@ def make_continuous_projection(continuous_df, days_timeframe):
 
     m, b = calculate_line_between_two_values(value1= most_recent_date['net_worth'], value2=date_to_compare['net_worth'], points_in_between=days_timeframe)
 
-    predictions = {'date_using': date_to_compare}
+    predictions = {'date_using': date_to_compare, '14_day_slope': m*Decimal('14')}
     # Predictions
     # AVERAGE_DAYS_PER_MONTH = Decimal('30.4')
     # 1 months prediction = 30.4 days

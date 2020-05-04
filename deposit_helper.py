@@ -1,35 +1,33 @@
 from decimal import Decimal
 
 current_savings = {
-  "permanent savings": 140.09,
-  "bills emergency": 25,
+  "permanent savings": 160.09,
+  "bills emergency": 35,
   "other investments": 0,
-  "stocks": 286.83,
-  "crypto": 55,
-  "vacation": 121.10,
-  "laptop": 32.90,
-  "tesla": 154.99,
-  "tattoo": 69.60,
-  "plastic surgery": 16.16,
-  "laser hair removal": 32.40,
-  "NAS": 10
+  "stocks": 343.83,
+  "crypto": 105,
+  "vacation": 141.10,
+  "laptop": 42.90,
+  "tesla": 185.00,
+  "tattoo": 89.60,
+  "plastic surgery": 36.16,
+  "laser hair removal": 32.40
 }
 
-amount_to_save = 252.56
+amount_to_save = 2405.03
 
 to_add = {
-  "permanent savings": 20,
-  "bills emergency": 10,
-  "other investments": 0,
-  "stocks": 57,
-  "crypto": 50,
-  "vacation": 20,
-  "laptop": 10,
-  "tesla": 30,
-  "tattoo": 20,
-  "plastic surgery": 20,
+  "permanent savings": 300,
+  "bills emergency": 600,
+  "other investments": 600,
+  "stocks": 200,
+  "crypto": 100,
+  "vacation": 150,
+  "laptop": 5,
+  "tesla": 200.03,
+  "tattoo": 100,
+  "plastic surgery": 100,
   "laser hair removal": 0,
-  "NAS": 15.56
 }
 
 new_savings = {}
