@@ -322,6 +322,17 @@ def make_continuous_projections(continuous_df):
     rows.append(['6 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'],
                  predictions['six_months'], predictions['one_year'], predictions['two_years'],
                  predictions['five_years'], predictions['ten_years']])
+
+    predictions = make_continuous_projection(continuous_df, 243)
+    rows.append(['8 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'],
+                 predictions['six_months'], predictions['one_year'], predictions['two_years'],
+                 predictions['five_years'], predictions['ten_years']])
+
+    #predictions = make_continuous_projection(continuous_df, 304)
+    #rows.append(['10 Months', predictions['date_using'].name, predictions['14_day_slope'], predictions['one_month'], predictions['three_months'],
+    #             predictions['six_months'], predictions['one_year'], predictions['two_years'],
+    #             predictions['five_years'], predictions['ten_years']])
+
     print(tabulate(rows, headers='firstrow'))
 
 
@@ -391,6 +402,12 @@ def get_projections():
     continuous_df = create_continuous_graph(snapshot_list)
     make_continuous_projections(continuous_df)
 
+    most_recent_date = continuous_df.iloc[-1]
+    date_to_compare = continuous_df.loc[most_recent_date.name - datetime.timedelta(days=14)]
+
+    m, b = calculate_line_between_two_values(value1= most_recent_date['net_worth'], value2=date_to_compare['net_worth'], points_in_between=14)
+
+    return round(m * 14, 2)
     # First comparison
     #make_projection(snapshot_list, -2, 12)
     #make_projection(snapshot_list, -4, 6)
@@ -463,6 +480,7 @@ def get_total_savings_for_purchase(savings_for_purchase):
     for saving_type in savings_for_purchase:
         total += Decimal(str(savings_for_purchase[saving_type]))
     return total
+
 
 if __name__ == '__main__':
     import os.path
