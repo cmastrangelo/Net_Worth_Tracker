@@ -2,43 +2,41 @@ from decimal import Decimal
 import json
 
 current_savings = {
-  "bills emergency": 1095.09,
-  "stocks": 543.83,
-  "crypto": 205,
-  "vacation": 291.10,
-  "laptop": 47.90,
-  "tesla": 385.03,
-  "tattoo": 189.60,
-  "plastic surgery": 136.16,
-  "laser hair removal": 32.40
+    "bills emergency": 1180.11,
+    "stocks": 570.83,
+    "crypto": 226.0,
+    "vacation": 326.1,
+    "laptop": 57.9,
+    "tesla": 430.03,
+    "tattoo": 201.6,
+    "plastic surgery": 151.16,
+    "laser hair removal": 32.4
 }
 
 savings_to_purhcase = {
-  "other investments": 600,
-  "NAS": 55.56,
-  "TV": 20
+    "other investments": 350.0,
+    "TV": 420.0
 }
 
 rent_and_bills = []
 
-amount_to_save = 1324.79
+amount_to_save = 974.79
 
 to_add_savings = {
-  "bills emergency": 30,
-  "stocks": 20,
-  "crypto": 18,
-  "vacation": 30,
+  "bills emergency": 53,
+  "stocks": 15,
+  "crypto": 10,
+  "vacation": 17,
   "laptop": 5,
-  "tesla": 30,
-  "tattoo": 7,
-  "plastic surgery": 10,
+  "tesla": 20,
+  "tattoo": 15,
+  "plastic surgery": 15,
   "laser hair removal": 0
 }
 
 to_add_to_purchase = {
   "other investments": 0,
-  "NAS": 50,
-  "TV": 350
+  "TV": 50
 }
 
 to_add_rent_and_bills = [774.79]

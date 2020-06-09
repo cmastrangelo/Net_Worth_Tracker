@@ -396,6 +396,15 @@ def create_projection(prediction_in_days, most_recent_date_data, m):
     return prediction_date, prediction_net_worth
 
 
+def get_last_point_slope():
+    snapshots = load_snapshots()
+    snapshot_list = snapshot_to_list(snapshots)
+    net_worth_difference = get_snapshot_total_value(snapshot_list[-1][1]) - get_snapshot_total_value(snapshot_list[-2][1])
+    time_difference = (datetime.datetime.fromtimestamp(int(snapshot_list[-1][0])) -
+                       datetime.datetime.fromtimestamp(int(snapshot_list[-2][0])))
+    return net_worth_difference, time_difference
+
+
 def get_projections():
     snapshots = load_snapshots()
     snapshot_list = snapshot_to_list(snapshots)
@@ -403,6 +412,7 @@ def get_projections():
     make_continuous_projections(continuous_df)
 
     most_recent_date = continuous_df.iloc[-1]
+
     date_to_compare = continuous_df.loc[most_recent_date.name - datetime.timedelta(days=14)]
 
     m, b = calculate_line_between_two_values(
@@ -411,7 +421,8 @@ def get_projections():
         points_in_between=14
     )
 
-    return round(m * 14, 2)
+    last_14_day_slope = round(m * 14, 2)
+    return last_14_day_slope
     # First comparison
     #make_projection(snapshot_list, -2, 12)
     #make_projection(snapshot_list, -4, 6)

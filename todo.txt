@@ -1,2 +1,3 @@
+- use last points for last point slone not 14 day slope
 - organize main
 - organize helpers
