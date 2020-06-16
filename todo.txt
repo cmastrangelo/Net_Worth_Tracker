@@ -1,3 +1,4 @@
 - use last points for last point slone not 14 day slope
 - organize main
 - organize helpers
+- In rent and bills, add a section for spotify where it will accumulate every month (since it's once every 6 months)

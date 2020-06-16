@@ -37,9 +37,12 @@ helper.display_total_dedicated_savings_and_investments(snapshot_data)
 print('\nGetting projections...')
 print('---------------------------------------------------------------------------------------------------------------')
 last_14_day_slope = helper.get_projections()
-last_point_slope, last_point_timeframe = helper.get_last_point_slope()
+last_point_slope, last_point_timeframe, fourteen_day_rate, increase_per_day = helper.get_last_point_slope()
 print('\nLast 14 day slope:', last_14_day_slope)
-print('Last point slope:', last_point_slope, '-', last_point_timeframe)
+print(
+    'Last point slope:', last_point_slope, '-', last_point_timeframe,
+    '(14 day rate of', str(fourteen_day_rate), 'or', str(increase_per_day), 'per day)'
+)
 print('---------------------------------------------------------------------------------------------------------------')
 print('Total in Savings Account (Savings + Ren/Bills + Savings for Purchase):', helper.get_total_savings_and_rent(savings_data))
 print('--------------------------------------------------------------------------------------------------------------')

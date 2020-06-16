@@ -402,7 +402,11 @@ def get_last_point_slope():
     net_worth_difference = get_snapshot_total_value(snapshot_list[-1][1]) - get_snapshot_total_value(snapshot_list[-2][1])
     time_difference = (datetime.datetime.fromtimestamp(int(snapshot_list[-1][0])) -
                        datetime.datetime.fromtimestamp(int(snapshot_list[-2][0])))
-    return net_worth_difference, time_difference
+    total_hours = Decimal(str(time_difference.days)) * Decimal('24') + Decimal(str(time_difference.seconds))//Decimal(str(3600))
+    hours_in_14_days = Decimal(str(14 * 24))
+    increase_per_hour = Decimal(str(net_worth_difference)) / Decimal(str(total_hours))
+    fourteen_day_rate = increase_per_hour * hours_in_14_days
+    return net_worth_difference, time_difference, round(fourteen_day_rate, 2), round(increase_per_hour * Decimal('24'), 2)
 
 
 def get_projections():

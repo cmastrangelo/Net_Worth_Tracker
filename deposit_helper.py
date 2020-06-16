@@ -2,15 +2,14 @@ from decimal import Decimal
 import json
 
 current_savings = {
-    "bills emergency": 1180.11,
-    "stocks": 570.83,
-    "crypto": 226.0,
-    "vacation": 326.1,
-    "laptop": 57.9,
-    "tesla": 430.03,
-    "tattoo": 201.6,
-    "plastic surgery": 151.16,
-    "laser hair removal": 32.4
+    "bills emergency": 1033.11,
+    "stocks": 585.83,
+    "crypto": 236.0,
+    "vacation": 343.1,
+    "laptop": 62.9,
+    "tesla": 450.03,
+    "tattoo": 216.6,
+    "plastic surgery": 166.16,
 }
 
 savings_to_purhcase = {
@@ -18,28 +17,27 @@ savings_to_purhcase = {
     "TV": 420.0
 }
 
-rent_and_bills = []
+rent_and_bills = [774.79]
 
-amount_to_save = 974.79
+amount_to_save = 32.4
 
 to_add_savings = {
-  "bills emergency": 53,
-  "stocks": 15,
-  "crypto": 10,
-  "vacation": 17,
-  "laptop": 5,
-  "tesla": 20,
-  "tattoo": 15,
-  "plastic surgery": 15,
-  "laser hair removal": 0
+  "bills emergency": 0,
+  "stocks": 4,
+  "crypto": 3,
+  "vacation": 2,
+  "laptop": 1,
+  "tesla": 7.4,
+  "tattoo": 10,
+  "plastic surgery": 5,
 }
 
 to_add_to_purchase = {
   "other investments": 0,
-  "TV": 50
+  "TV": 0
 }
 
-to_add_rent_and_bills = [774.79]
+to_add_rent_and_bills = []
 
 new_savings = {}
 new_savings_to_purchase = {}
